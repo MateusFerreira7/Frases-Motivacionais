@@ -1,0 +1,42 @@
+version: "3"
+services:
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - 8080:80
+    networks:
+      - common
+    depends_on:
+      - db
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 1s
+      restart_policy:
+        condition: on-failure
+    environment:
+      WORDPRESS_DB_HOST: "db"
+      WORDPRESS_DB_NAME: "wordpress"
+      WORDPRESS_DB_USER: "wp"
+      WORDPRESS_DB_PASSWORD: "changemetoo"
+  db:
+    image: mysql:5.7
+    networks:
+      - common
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+    environment:
+      DB_SERVICE_NAME: db
+      MYSQL_ROOT_PASSWORD: changeme 
+      MYSQL_DATABASE: wordpress 
+      MYSQL_USER: wp 
+      MYSQL_PASSWORD: changemetoo 
+
+networks:
+  common:
